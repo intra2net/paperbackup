@@ -20,6 +20,7 @@ private key is still encrypted with it's passphrase, so make sure
 you don't lose or forget it.
 
 See some example output here:
+https://github.com/intra2net/paperbackup/raw/master/example_output.pdf
 
 ###### Restore
 
