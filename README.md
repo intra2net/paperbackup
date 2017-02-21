@@ -39,7 +39,7 @@ not work, type in the missing letters from the plaintext output at the end of th
 - PyX http://pyx.sourceforge.net/
 - LaTeX (required by PyX) https://www.latex-project.org/
 - python3-qrencode https://github.com/Arachnid/pyqrencode
-- enscript python3-qrencode
+- enscript https://www.gnu.org/software/enscript/
 - ghostscript https://www.ghostscript.com/
 - ZBar http://zbar.sourceforge.net/
 
@@ -61,6 +61,16 @@ types of your important backups.
 Storing the paper backup in a machine readable format like barcodes makes it practical to restore
 even large amounts in short order. If the paper is too damaged for the barcodes to be readable,
 you still have the printed plaintext that paperbackup produces.
+
+## How to properly store the paper
+
+The ISO has some standards for preservation and long term storage of paper:
+
+ISO/TC 46/SC 10 - Requirements for document storage and conditions for preservation
+http://www.iso.org/iso/home/store/catalogue_tc/catalogue_tc_browse.htm?commid=48842
+
+Here's an example of what ISO 16245 describes:
+http://www.iso.org/iso/livelinkgetfile-isocs?nodeId=15011261
 
 ## Choice and error resilency of barcodes
 
@@ -102,6 +112,19 @@ and otherwise unencoded data follows.
 
 The program writes PDFs in A4 by default. You can uncomment the respective lines
 in the constants section of the source to change to US Letter.
+
+## Similar projects
+
+###### PAPERBACK http://ollydbg.de/Paperbak/
+
+Although it is GPL 3, it is currently available for Windows only. It uses it's own proprietary
+barcode type. That allows it to produce much more dense code, but in case of a problem with
+decoding you are on your own.
+
+###### Paperkey http://www.jabberwocky.com/software/paperkey/
+
+It is designed to reduce the data needed to backup a private GnuPG key. It does not help you
+to print and scan the data. So it could be used in addition to paperbackup.py.
 
 ## License
 
