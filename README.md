@@ -76,6 +76,11 @@ http://www.iso.org/iso/livelinkgetfile-isocs?nodeId=15011261
 Only 2D barcodes have the density to make key backup practical. QR Code and DataMatrix are
 the most common 2D barcodes.
 
+Using a common barcode symbology makes sure that there are several independent implementations
+of decoders available. This increases the probability that they handle defects and error
+correction differently and are able to tolerate different kinds of defects. So if the barcode
+gets damaged, you have several programs you can try.
+
 Several papers comparing QR and DataMatrix come to the conclusion that DataMatrix allows
 a higher density and offers better means for error correction. I tested this and came
 to the conclusion that the QR code decoding programs available to me had better error
