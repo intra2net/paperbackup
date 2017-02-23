@@ -30,7 +30,7 @@
 import os
 import re
 import sys
-import shlex
+import subprocess
 import qrencode
 from tempfile import mkstemp
 from PIL import Image
@@ -135,19 +135,32 @@ fd, temp_barcode_path = mkstemp('.pdf', 'qr_', '.')
 # will use pdf as the tmpfile has a .pdf suffix
 pdf.writetofile(temp_barcode_path)
 
-# use "enscript" to create postscript with the plaintext
 fd, temp_text_path = mkstemp('.ps', 'text_', '.')
-ret = os.system("enscript -p" + shlex.quote(temp_text_path) +
-                " -f Courier12 -M" + paperformat_str +
-                " " + shlex.quote(input_path))
-if ret != 0:
+
+# use "enscript" to create postscript with the plaintext
+p = subprocess.Popen(
+        ["enscript", "-p"+temp_text_path, "-f", "Courier12",
+         "-M" + paperformat_str, "--header",
+        just_filename + "|Page $%"],
+        stdout=subprocess.PIPE,stdin=subprocess.PIPE)
+
+# send the file and a tag line to enscript
+p.stdin.write(ascdata.encode('utf-8'))
+p.stdin.write("\n\n\n--\n".encode('utf-8'))
+p.stdin.write("Created with paperbackup.py\n".encode('utf-8'))
+p.stdin.write("See https://github.com/intra2net/paperbackup/ for instructions\n".encode('utf-8'))
+
+p.communicate()[0]
+p.stdin.close()
+
+if p.returncode != 0:
     raise RuntimeError('error calling enscript')
 
 # combine both files with ghostscript
-ret = os.system("gs -dBATCH -dNOPAUSE -q -sDEVICE=pdfwrite -sOutputFile=" +
-                shlex.quote(just_filename) +
-                ".pdf " + shlex.quote(temp_barcode_path) + " " +
-                shlex.quote(temp_text_path))
+
+ret = subprocess.call(["gs", "-dBATCH", "-dNOPAUSE", "-q", "-sDEVICE=pdfwrite",
+                       "-sOutputFile=" + just_filename + ".pdf",
+                       temp_barcode_path, temp_text_path])
 if ret != 0:
     raise RuntimeError('error calling ghostscript')
 
