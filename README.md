@@ -120,6 +120,12 @@ Although it is GPL 3, it is currently available for Windows only. It uses it's o
 barcode type. That allows it to produce much more dense code, but in case of a problem with
 decoding you are on your own.
 
+###### Twibright Optar http://ronja.twibright.com/optar/
+
+Uses the not-so-common Golay code to backup 200KB per page. So it offers a much higher
+density than paperbackup.py, but is probably more affected by defects on the paper.
+GPL 2 and designed for Linux.
+
 ###### Paperkey http://www.jabberwocky.com/software/paperkey/
 
 It is designed to reduce the data needed to backup a private GnuPG key. It does not help you
