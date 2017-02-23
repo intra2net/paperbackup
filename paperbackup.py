@@ -33,6 +33,7 @@ import sys
 import subprocess
 import qrencode
 from tempfile import mkstemp
+from datetime import datetime
 from PIL import Image
 from pyx import *
 
@@ -135,14 +136,16 @@ fd, temp_barcode_path = mkstemp('.pdf', 'qr_', '.')
 # will use pdf as the tmpfile has a .pdf suffix
 pdf.writetofile(temp_barcode_path)
 
+# prepare plain text output
 fd, temp_text_path = mkstemp('.ps', 'text_', '.')
+input_file_modification = datetime.fromtimestamp(os.path.getmtime(input_path)).strftime("%Y-%m-%d %H:%M:%S")
 
 # use "enscript" to create postscript with the plaintext
 p = subprocess.Popen(
         ["enscript", "-p"+temp_text_path, "-f", "Courier12",
-         "-M" + paperformat_str, "--header",
-        just_filename + "|Page $%"],
-        stdout=subprocess.PIPE,stdin=subprocess.PIPE)
+            "-M" + paperformat_str, "--header",
+            just_filename + "|" + input_file_modification + "|Page $%"],
+        stdout=subprocess.PIPE, stdin=subprocess.PIPE)
 
 # send the file and a tag line to enscript
 p.stdin.write(ascdata.encode('utf-8'))
