@@ -30,6 +30,7 @@
 import os
 import re
 import sys
+import hashlib
 import subprocess
 import qrencode
 from tempfile import mkstemp
@@ -45,6 +46,8 @@ barcode_x_positions = [1.5, 11, 1.5, 11, 1.5, 11]
 barcode_y_positions = [18.7, 18.7, 10, 10, 1.2, 1.2]
 text_x_offset = 0
 text_y_offset = 8.2
+
+plaintext_maxlinechars = 73
 
 # the paperformat to use, activate the one you want
 paperformat_obj = document.paperformat.A4
@@ -140,6 +143,47 @@ pdf.writetofile(temp_barcode_path)
 fd, temp_text_path = mkstemp('.ps', 'text_', '.')
 input_file_modification = datetime.fromtimestamp(os.path.getmtime(input_path)).strftime("%Y-%m-%d %H:%M:%S")
 
+# split lines on plaintext_maxlinechars - ( checksum_size + separator size)
+splitat=plaintext_maxlinechars - 8
+splitlines=[]
+for line in ascdata.splitlines():
+    while len(line) > splitat:
+        splitlines.append(line[:splitat])
+        # add a ^ at the beginning of the broken line to mark the linebreak
+        line="^"+line[splitat:]
+    splitlines.append(line)
+
+# add checksums to each line
+chksumlines=[]
+for line in splitlines:
+    # remove the linebreak marks for checksumming
+    if len(line) > 1 and line[0] == "^":
+        sumon=line[1:]
+    else:
+        sumon=line
+
+    # use the first 6 bytes of MD5 as checksum
+    chksum = hashlib.md5(sumon.encode('utf-8')).hexdigest()[:6]
+
+    # add the checksum right-justified to the line
+    line+=" "*(splitat-len(line))
+    line+=" |"+chksum
+
+    chksumlines.append(line)
+
+# add some documentation around the plaintest
+outlines=[]
+coldoc=" "*splitat
+coldoc+=" | MD5"
+outlines.append(coldoc)
+outlines.extend(chksumlines)
+outlines.append("")
+outlines.append("")
+outlines.append("")
+outlines.append("--")
+outlines.append("Created with paperbackup.py")
+outlines.append("See https://github.com/intra2net/paperbackup/ for instructions")
+
 # use "enscript" to create postscript with the plaintext
 p = subprocess.Popen(
         ["enscript", "-p"+temp_text_path, "-f", "Courier12",
@@ -147,11 +191,10 @@ p = subprocess.Popen(
             just_filename + "|" + input_file_modification + "|Page $%"],
         stdout=subprocess.PIPE, stdin=subprocess.PIPE)
 
-# send the file and a tag line to enscript
-p.stdin.write(ascdata.encode('utf-8'))
-p.stdin.write("\n\n\n--\n".encode('utf-8'))
-p.stdin.write("Created with paperbackup.py\n".encode('utf-8'))
-p.stdin.write("See https://github.com/intra2net/paperbackup/ for instructions\n".encode('utf-8'))
+# send the text to enscript
+for line in outlines:
+    p.stdin.write(line.encode('utf-8'))
+    p.stdin.write(os.linesep.encode('utf-8'))
 
 p.communicate()[0]
 p.stdin.close()

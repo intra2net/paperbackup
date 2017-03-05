@@ -112,6 +112,21 @@ by all programs, I chose not to use it.
 Each barcode is labeled with a start marker `^<sequence number><space>`. After that the raw
 and otherwise unencoded data follows.
 
+## Plaintext output
+
+paperbackup prints the plaintext in addition to the QR codes. If decoding one or more barcodes
+should fail, you can use it as fallback.
+
+To ease entering large amounts of "gibberish" like base64 data, each line is printed with
+a checksum. The checksum is the first 6 hexadecimal characters of MD5 sum of the line content.
+The MD5 is on the "pure" line content without the line break (e.g. \n or \r\n)
+
+To verify a line checksum use
+`echo -n "line content" | md5sum | cut -c -6`
+
+If a line is too long to be printed on paper, it is split. This is denoted by a "^" character
+at the begin of the next line on paper. The "^" is not included in the checksum.
+
 ## Changing the paper format
 
 The program writes PDFs in A4 by default. You can uncomment the respective lines
