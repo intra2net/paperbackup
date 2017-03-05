@@ -136,6 +136,11 @@ GPL 2 and designed for Linux.
 It is designed to reduce the data needed to backup a private GnuPG key. It does not help you
 to print and scan the data. So it could be used in addition to paperbackup.py.
 
+###### asc2qr.sh https://github.com/4bitfocus/asc-key-to-qr-code
+
+Very similar to paperbackup.py. But it only outputs .png images without ordering information.
+So you have to arrange printing and ordering yourself.
+
 ## License
 
 MIT X11 License
