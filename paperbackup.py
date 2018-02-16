@@ -79,6 +79,21 @@ def finish_page(pdf, canv, pageno):
     pdf.append(document.page(canv, paperformat=paperformat_obj,
                              fittosize=0, centered=0))
 
+def create_chunks(ascdata, max_bytes_in_barcode):
+    """Chunk ascdata into a list of blocks with size max_bytes_in_barcode or less.
+    Only specific ASCII characters are allowed in ascdata so we don't worry about Unicode.
+    Each block begins with ^<sequence number><space> (1-based).
+    This allows to easily put them back together in the correct order."""
+    # Slicing ascdata reduces processing time to about 5% compared to handling each char separately
+    chunks = []
+    chunk_idx = 0
+    while chunk_idx < len(ascdata):
+        chunkdata = "^" + str(len(chunks)+1) + " "
+        charnum = max_bytes_in_barcode - len(chunkdata)
+        chunks.append(chunkdata + ascdata[chunk_idx:chunk_idx+charnum])
+        chunk_idx += charnum
+    return chunks
+
 if __name__ == "__main__":
 
     if len(sys.argv) != 2:
@@ -105,18 +120,7 @@ if __name__ == "__main__":
     # split the ascdata into chunks of max_bytes_in_barcode size
     # each chunk begins with ^<sequence number><space>
     # this allows to easily put them back together in the correct order
-    barcode_blocks = []
-    chunkdata = "^1 "
-    for char in list(ascdata):
-        if len(chunkdata)+1 > max_bytes_in_barcode:
-            # chunk is full -> create barcode from it
-            barcode_blocks.append(create_barcode(chunkdata))
-            chunkdata = "^" + str(len(barcode_blocks)+1) + " "
-
-        chunkdata += char
-
-    # handle the last, non filled chunk too
-    barcode_blocks.append(create_barcode(chunkdata))
+    barcode_blocks = [ create_barcode(chunk) for chunk in create_chunks(ascdata, max_bytes_in_barcode) ]
 
     # init PyX
     unit.set(defaultunit="cm")
