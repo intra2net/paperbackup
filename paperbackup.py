@@ -36,7 +36,13 @@ import logging
 
 # TODO: implement argument switch to force usage of pyx
 try:
-    import reportlab
+    import reportlab  # to check if we can use it
+    from reportlab.pdfgen import canvas
+    from reportlab.lib import pagesizes
+    from reportlab.lib.utils import ImageReader
+    from reportlab.lib.units import cm
+    from reportlab.pdfbase import pdfmetrics
+    from reportlab.pdfbase.ttfonts import TTFont
 except ModuleNotFoundError:
     import subprocess
     from tempfile import mkstemp
@@ -59,6 +65,7 @@ paperformat_str = "A4"
 # constants for the size and layout of the barcodes on page
 max_bytes_in_barcode = 140
 barcodes_per_page = 6
+# in centimeters
 barcode_height = 8
 barcode_x_positions = [1.5, 11, 1.5, 11, 1.5, 11]
 barcode_y_positions = [18.7, 18.7, 10, 10, 1.2, 1.2]
@@ -67,8 +74,23 @@ text_y_offset = 8.2
 
 plaintext_maxlinechars = 73
 
-if not USE_REPORTLAB:
-    paperformat_obj = getattr(document.paperformat, paperformat_str)
+# tool-specific setup for paper format, positions, etc.
+if USE_REPORTLAB:
+    if str.isdigit(paperformat_str[-1]):
+        # "A4", etc.
+        paperformat_obj = getattr(pagesizes, paperformat_str, 'A4')
+    else:
+        # "Letter", "legal", etc.
+        paperformat_obj = getattr(pagesizes, paperformat_str.lower(), 'letter')
+    l_unit = cm
+    barcode_height = barcode_height * l_unit
+    barcode_x_positions = [ x * l_unit for x in barcode_x_positions ]
+    barcode_y_positions = [ x * l_unit for x in barcode_y_positions ]
+    text_x_offset = text_x_offset * l_unit
+    text_y_offset = text_y_offset * l_unit
+else:
+    # PyX
+    paperformat_obj = getattr(document.paperformat, paperformat_str, 'A4')
 
 def create_barcode(chunkdata):
     version, size, im = qrencode.encode(chunkdata,
@@ -129,7 +151,10 @@ def prepare_plainlines(ascdata, plaintext_maxlinechars):
     # add some documentation around the plaintest
     outlines=[]
     coldoc=" "*splitat
-    coldoc+=" | MD5"
+    coldoc+="truncated"
+    outlines.append(coldoc)
+    coldoc=" "*splitat
+    coldoc+="   MD5"
     outlines.append(coldoc)
     outlines.extend(chksumlines)
     outlines.append("")
@@ -140,6 +165,36 @@ def prepare_plainlines(ascdata, plaintext_maxlinechars):
     outlines.append("See https://github.com/intra2net/paperbackup/ for instructions")
 
     return outlines
+
+def search_DPCustomMono2_font(USE_REPORTLAB=USE_REPORTLAB):
+    # Try really hard to use the DPCustomMono2 font from Distributed Proofreaders
+    # see: https://www.pgdp.net/wiki/DP_Official_Documentation:Proofreading/DPCustomMono2_Font
+    # FIXME: How to select it without all these directories?
+    if not USE_REPORTLAB:
+        raise Exception("DONT CALL ME WHEN NOT USING REPORTLAB!")
+    font_locations = ['~/.fonts/DPCustomMono2.ttf',
+                        '~/.fonts/DPCustomMono2/DPCustomMono2.ttf',
+                        '~/.local/share/fonts/DPCustomMono2.ttf',
+                        '~/.local/share/fonts/DPCustomMono2/DPCustomMono2.ttf',
+                        '/usr/share/fonts/TTF/DPCustomMono2.ttf',
+                        '/usr/share/fonts/truetype/DPCustomMono2.ttf',
+                        '/usr/X11R6/lib/X11/fonts/ttfonts/DPCustomMono2.ttf',
+                        '/usr/X11R6/lib/X11/fonts/DPCustomMono2.ttf']
+    font_name = None
+    font_idx = 0
+    while font_name is None and font_idx < len(font_locations):
+        try:
+            pdfmetrics.registerFont(TTFont('DPCustomMono2',
+                                        os.path.expanduser(font_locations[font_idx])))
+        except reportlab.pdfbase.ttfonts.TTFError:
+            font_name = None
+            logging.debug("Font NOT found in: %s"%font_locations[font_idx])
+        else:
+            font_name = "DPCustomMono2"
+            logging.debug("Font was FOUND in: %s"%font_locations[font_idx])
+        finally:
+            font_idx += 1
+    return font_name
 
 if __name__ == "__main__":
 
@@ -171,7 +226,64 @@ if __name__ == "__main__":
     barcode_blocks = [ create_barcode(chunk) for chunk in create_chunks(ascdata, max_bytes_in_barcode) ]
 
     if USE_REPORTLAB:
-        pass
+
+        font_name = search_DPCustomMono2_font()
+        c = canvas.Canvas(input_path+".pdf",
+                          pagesize=paperformat_obj)
+
+        # place barcodes on pages
+        pgno = 0   # page number
+        ppos = 0   # position id on page
+        if font_name: c.setFont(font_name, 9)
+        for bc in range(len(barcode_blocks)):
+            if ppos >= barcodes_per_page:
+                # finish the page
+                c.drawString(10*cm, 0.6*cm, "Page %i" % (pgno+1))
+                c.showPage()
+                if font_name: c.setFont(font_name, 9)
+                pgno += 1
+                ppos = 0
+
+            c.drawString(barcode_x_positions[ppos] + text_x_offset,
+                         barcode_y_positions[ppos] + text_y_offset,
+                         "%s (%i/%i)" % (just_filename, bc+1, len(barcode_blocks)))
+            c.drawImage(ImageReader(barcode_blocks[bc]),
+                        barcode_x_positions[ppos],
+                        barcode_y_positions[ppos],
+                        width=barcode_height,
+                        height=barcode_height,)
+            ppos += 1
+        # finish the last page with barcode(s)
+        c.drawString(10*cm, 0.6*cm, "Page %i" % (pgno+1))
+        c.showPage()
+        pgno += 1
+
+        # place plaintext lines with truncated MD5 sums and instructions
+        outlines = prepare_plainlines(ascdata, plaintext_maxlinechars)
+
+        if font_name: c.setFont(font_name, 9)
+        text = c.beginText(1.5*cm, 27*cm)
+        if font_name:
+            text.setLeading(13)
+        for line in outlines:
+            logging.debug(text.getStartOfLine()[1]/cm)
+            if text.getStartOfLine()[1] < 1.5*cm :
+                logging.debug("Minimum reached!")
+                c.drawText(text)
+                c.drawString(10*cm, 0.6*cm, "Page %i" % (pgno+1))
+                c.showPage()
+                if font_name: c.setFont(font_name, 9)
+                pgno += 1
+                text = c.beginText(1.5*cm, 27*cm)
+            text.textLine(line)
+
+        # finish the last page
+        c.drawText(text)
+        c.drawString(10*cm, 0.6*cm, "Page %i" % (pgno+1))
+        c.showPage()
+        # Save the PDF file
+        c.save()
+
     else:
 
         # init PyX
