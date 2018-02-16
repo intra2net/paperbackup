@@ -49,6 +49,10 @@ except ModuleNotFoundError:
 
 logging.debug("USE_REPORTLAB is %s"%USE_REPORTLAB)
 
+# the paperformat to use, activate the one you want
+paperformat_str = "A4"
+# paperformat_str="Letter"
+
 # constants for the size and layout of the barcodes on page
 max_bytes_in_barcode = 140
 barcodes_per_page = 6
@@ -60,12 +64,8 @@ text_y_offset = 8.2
 
 plaintext_maxlinechars = 73
 
-# the paperformat to use, activate the one you want
-paperformat_obj = document.paperformat.A4
-paperformat_str = "A4"
-# paperformat_obj=document.paperformat.Letter
-# paperformat_str="Letter"
-
+if not USE_REPORTLAB:
+    paperformat_obj = getattr(document.paperformat, paperformat_str)
 
 def create_barcode(chunkdata):
     version, size, im = qrencode.encode(chunkdata,
