@@ -41,6 +41,14 @@ import logging
 
 logging.basicConfig(level=logging.WARN)
 
+try:
+    import reportlab
+    USE_REPORTLAB = True
+except ModuleNotFoundError:
+    USE_REPORTLAB = False
+
+logging.debug("USE_REPORTLAB is %s"%USE_REPORTLAB)
+
 # constants for the size and layout of the barcodes on page
 max_bytes_in_barcode = 140
 barcodes_per_page = 6
