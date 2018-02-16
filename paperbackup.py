@@ -164,6 +164,38 @@ def prepare_plainlines(ascdata, plaintext_maxlinechars):
     outlines.append("Created with paperbackup.py")
     outlines.append("See https://github.com/intra2net/paperbackup/ for instructions")
 
+    outlines.append("")
+    outlines.append("             -----------------------------------------")
+    outlines.append("")
+    outlines.append("The full alphabet and come special characters for comparison:")
+    outlines.append("  ABCDEFGHIJKLMNOPQRSTUVWXYZ -- 0123456789 / = + : . , # @ ! ( ) \ n -")
+    outlines.append("  abcdefghijklmnopqrstuvwxyz --        ... colon fullstop comma ...")
+    # TODO: if argument switch to include restore script:
+    outlines.append("")
+    outlines.append("             -----------------------------------------")
+    outlines.append("")
+    outlines.append("Below is a minimal copy of the paperrestore.sh script")
+    outlines.append("For a full-fledged restore script please see the above resources.")
+    outlines.append("")
+    outlines.append("             -----------------------------------------")
+    outlines.append("")
+    outlines.append("#  [...]")
+
+    outlines.append("# WARNING: do NOT type in the line number markers")
+    outlines.append("#           on the far right side! ----------------------------------vvv")
+    outlines.append("                                                                               ")
+    outlines.append("# zbarimg ends each scanned code with a newline                      #01")
+    outlines.append("                                                                     #02")
+    outlines.append("# each barcode content begins with ^<number><space>                  #03")
+    outlines.append("# so convert that to \\0<number><space>, so sort can sort on that     #04")
+    outlines.append("# then remove all \\n\\0<number><space> so we get the originial        #05")
+    outlines.append("# without newlines added                                             #06")
+    outlines.append("                                                                     #07")
+    outlines.append('/usr/bin/zbarimg --raw -Sdisable -Sqrcode.enable "$SCANNEDFILE" \    #08')
+    outlines.append('    | sed -e "s/\^/\\x0/g" \                                          #09')
+    outlines.append("    | sort -z -n \                                                   #10")
+    outlines.append("    | sed ':a;N;$!ba;s/\\n\\x0[0-9]* //g;s/\\x0[0-9]* //g;s/\\n\\x0//g'   #11")
+    outlines.append("#position of spaces:              H               H                  #12")
     return outlines
 
 def search_DPCustomMono2_font(USE_REPORTLAB=USE_REPORTLAB):
