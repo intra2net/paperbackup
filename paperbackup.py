@@ -107,9 +107,10 @@ if __name__ == "__main__":
     with open(input_path) as inputfile:
         ascdata = inputfile.read()
 
-    # only allow some harmless characters
-    # this is much more strict than neccessary, but good enough for key files
-    # you really need to forbid ^, NULL and anything that could upset enscript
+    # Only allow some harmless characters
+    # This is much more strict than neccessary, but good enough for key files
+    # you really need to forbid ^, NULL and anything that could upset enscript.
+    # This also ensures that we have only single-byte characters, i.e. no Unicode, for chunking
     allowedchars = re.compile(r"^[A-Za-z0-9/=+:., #@!()\n-]*")
     allowedmatch = allowedchars.match(ascdata)
     if allowedmatch.group() != ascdata:
