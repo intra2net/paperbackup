@@ -31,22 +31,25 @@ import os
 import re
 import sys
 import hashlib
-import subprocess
 import qrencode
-from tempfile import mkstemp
-from datetime import datetime
-from PIL import Image
-from pyx import *
 import logging
 
-logging.basicConfig(level=logging.WARN)
-
+# TODO: implement argument switch to force usage of pyx
 try:
     import reportlab
-    USE_REPORTLAB = True
 except ModuleNotFoundError:
-    USE_REPORTLAB = False
+    import subprocess
+    from tempfile import mkstemp
+    from datetime import datetime
+    from PIL import Image
+    from pyx import *
 
+logging.basicConfig(level=logging.DEBUG)
+
+if 'reportlab' in sys.modules:
+    USE_REPORTLAB = True
+else:
+    USE_REPORTLAB = False
 logging.debug("USE_REPORTLAB is %s"%USE_REPORTLAB)
 
 # the paperformat to use, activate the one you want
@@ -167,73 +170,77 @@ if __name__ == "__main__":
     # this allows to easily put them back together in the correct order
     barcode_blocks = [ create_barcode(chunk) for chunk in create_chunks(ascdata, max_bytes_in_barcode) ]
 
-    # init PyX
-    unit.set(defaultunit="cm")
-    pdf = document.document()
+    if USE_REPORTLAB:
+        pass
+    else:
 
-    # place barcodes on pages
-    pgno = 0   # page number
-    ppos = 0   # position id on page
-    c = canvas.canvas()
-    for bc in range(len(barcode_blocks)):
-        # page full?
-        if ppos >= barcodes_per_page:
-            finish_page(pdf, c, pgno)
-            c = canvas.canvas()
-            pgno += 1
-            ppos = 0
+        # init PyX
+        unit.set(defaultunit="cm")
+        pdf = document.document()
 
-        c.text(barcode_x_positions[ppos] + text_x_offset,
-            barcode_y_positions[ppos] + text_y_offset,
-            "%s (%i/%i)" % (text.escapestring(just_filename),
-                            bc+1, len(barcode_blocks)))
-        c.insert(bitmap.bitmap(barcode_x_positions[ppos],
-                               barcode_y_positions[ppos],
-                               barcode_blocks[bc], height=barcode_height))
-        ppos += 1
+        # place barcodes on pages
+        pgno = 0   # page number
+        ppos = 0   # position id on page
+        c = canvas.canvas()
+        for bc in range(len(barcode_blocks)):
+            # page full?
+            if ppos >= barcodes_per_page:
+                finish_page(pdf, c, pgno)
+                c = canvas.canvas()
+                pgno += 1
+                ppos = 0
 
-    finish_page(pdf, c, pgno)
-    pgno += 1
+            c.text(barcode_x_positions[ppos] + text_x_offset,
+                barcode_y_positions[ppos] + text_y_offset,
+                "%s (%i/%i)" % (text.escapestring(just_filename),
+                                bc+1, len(barcode_blocks)))
+            c.insert(bitmap.bitmap(barcode_x_positions[ppos],
+                                barcode_y_positions[ppos],
+                                barcode_blocks[bc], height=barcode_height))
+            ppos += 1
 
-    fd, temp_barcode_path = mkstemp('.pdf', 'qr_', '.')
-    # will use pdf as the tmpfile has a .pdf suffix
-    pdf.writetofile(temp_barcode_path)
+        finish_page(pdf, c, pgno)
+        pgno += 1
 
-    # prepare plain text output
-    fd, temp_text_path = mkstemp('.ps', 'text_', '.')
-    input_file_modification = datetime.fromtimestamp(os.path.getmtime(input_path)).strftime("%Y-%m-%d %H:%M:%S")
+        fd, temp_barcode_path = mkstemp('.pdf', 'qr_', '.')
+        # will use pdf as the tmpfile has a .pdf suffix
+        pdf.writetofile(temp_barcode_path)
 
-    outlines = prepare_plainlines(ascdata, plaintext_maxlinechars)
+        # prepare plain text output
+        fd, temp_text_path = mkstemp('.ps', 'text_', '.')
+        input_file_modification = datetime.fromtimestamp(os.path.getmtime(input_path)).strftime("%Y-%m-%d %H:%M:%S")
 
-    # use "enscript" to create postscript with the plaintext
-    p = subprocess.Popen(
-            ["enscript", "-p"+temp_text_path, "-f", "Courier12",
-                "-M" + paperformat_str, "--header",
-                just_filename + "|" + input_file_modification + "|Page $%"],
-            stdout=subprocess.PIPE, stdin=subprocess.PIPE)
+        outlines = prepare_plainlines(ascdata, plaintext_maxlinechars)
 
-    # send the text to enscript
-    for line in outlines:
-        p.stdin.write(line.encode('utf-8'))
-        p.stdin.write(os.linesep.encode('utf-8'))
+        # use "enscript" to create postscript with the plaintext
+        p = subprocess.Popen(
+                ["enscript", "-p"+temp_text_path, "-f", "Courier12",
+                    "-M" + paperformat_str, "--header",
+                    just_filename + "|" + input_file_modification + "|Page $%"],
+                stdout=subprocess.PIPE, stdin=subprocess.PIPE)
 
-    p.communicate()[0]
-    p.stdin.close()
+        # send the text to enscript
+        for line in outlines:
+            p.stdin.write(line.encode('utf-8'))
+            p.stdin.write(os.linesep.encode('utf-8'))
 
-    if p.returncode != 0:
-        raise RuntimeError('error calling enscript')
+        p.communicate()[0]
+        p.stdin.close()
 
-    # combine both files with ghostscript
+        if p.returncode != 0:
+            raise RuntimeError('error calling enscript')
 
-    ret = subprocess.call(["gs", "-dBATCH", "-dNOPAUSE", "-q", "-sDEVICE=pdfwrite",
-                        "-sOutputFile=" + just_filename + ".pdf",
-                        temp_barcode_path, temp_text_path])
-    if ret != 0:
-        raise RuntimeError('error calling ghostscript')
+        # combine both files with ghostscript
 
-    # using enscript and ghostscript to create the plaintext output is a hack,
-    # using PyX and LaTeX would be more elegant. But I could not find an easy
-    # solution to flow the text over several pages with PyX.
+        ret = subprocess.call(["gs", "-dBATCH", "-dNOPAUSE", "-q", "-sDEVICE=pdfwrite",
+                            "-sOutputFile=" + just_filename + ".pdf",
+                            temp_barcode_path, temp_text_path])
+        if ret != 0:
+            raise RuntimeError('error calling ghostscript')
 
-    os.remove(temp_text_path)
-    os.remove(temp_barcode_path)
+        # using enscript and ghostscript to create the plaintext output is a hack,
+        # using PyX and LaTeX would be more elegant. But I could not find an easy
+        # solution to flow the text over several pages with PyX.
+
+        os.remove(temp_text_path)
+        os.remove(temp_barcode_path)
