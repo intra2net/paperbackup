@@ -37,6 +37,9 @@ from tempfile import mkstemp
 from datetime import datetime
 from PIL import Image
 from pyx import *
+import logging
+
+logging.basicConfig(level=logging.WARN)
 
 # constants for the size and layout of the barcodes on page
 max_bytes_in_barcode = 140
