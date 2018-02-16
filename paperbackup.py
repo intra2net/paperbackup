@@ -94,6 +94,50 @@ def create_chunks(ascdata, max_bytes_in_barcode):
         chunk_idx += charnum
     return chunks
 
+def prepare_plainlines(ascdata, plaintext_maxlinechars):
+    # split lines on plaintext_maxlinechars - ( checksum_size + separator size)
+    splitat=plaintext_maxlinechars - 8
+    splitlines=[]
+    for line in ascdata.splitlines():
+        while len(line) > splitat:
+            splitlines.append(line[:splitat])
+            # add a ^ at the beginning of the broken line to mark the linebreak
+            line="^"+line[splitat:]
+        splitlines.append(line)
+
+    # add checksums to each line
+    chksumlines=[]
+    for line in splitlines:
+        # remove the linebreak marks for checksumming
+        if len(line) > 1 and line[0] == "^":
+            sumon=line[1:]
+        else:
+            sumon=line
+
+        # use the first 6 bytes of MD5 as checksum
+        chksum = hashlib.md5(sumon.encode('utf-8')).hexdigest()[:6]
+
+        # add the checksum right-justified to the line
+        line+=" "*(splitat-len(line))
+        line+=" |"+chksum
+
+        chksumlines.append(line)
+
+    # add some documentation around the plaintest
+    outlines=[]
+    coldoc=" "*splitat
+    coldoc+=" | MD5"
+    outlines.append(coldoc)
+    outlines.extend(chksumlines)
+    outlines.append("")
+    outlines.append("")
+    outlines.append("")
+    outlines.append("--")
+    outlines.append("Created with paperbackup.py")
+    outlines.append("See https://github.com/intra2net/paperbackup/ for instructions")
+
+    return outlines
+
 if __name__ == "__main__":
 
     if len(sys.argv) != 2:
@@ -159,46 +203,7 @@ if __name__ == "__main__":
     fd, temp_text_path = mkstemp('.ps', 'text_', '.')
     input_file_modification = datetime.fromtimestamp(os.path.getmtime(input_path)).strftime("%Y-%m-%d %H:%M:%S")
 
-    # split lines on plaintext_maxlinechars - ( checksum_size + separator size)
-    splitat=plaintext_maxlinechars - 8
-    splitlines=[]
-    for line in ascdata.splitlines():
-        while len(line) > splitat:
-            splitlines.append(line[:splitat])
-            # add a ^ at the beginning of the broken line to mark the linebreak
-            line="^"+line[splitat:]
-        splitlines.append(line)
-
-    # add checksums to each line
-    chksumlines=[]
-    for line in splitlines:
-        # remove the linebreak marks for checksumming
-        if len(line) > 1 and line[0] == "^":
-            sumon=line[1:]
-        else:
-            sumon=line
-
-        # use the first 6 bytes of MD5 as checksum
-        chksum = hashlib.md5(sumon.encode('utf-8')).hexdigest()[:6]
-
-        # add the checksum right-justified to the line
-        line+=" "*(splitat-len(line))
-        line+=" |"+chksum
-
-        chksumlines.append(line)
-
-    # add some documentation around the plaintest
-    outlines=[]
-    coldoc=" "*splitat
-    coldoc+=" | MD5"
-    outlines.append(coldoc)
-    outlines.extend(chksumlines)
-    outlines.append("")
-    outlines.append("")
-    outlines.append("")
-    outlines.append("--")
-    outlines.append("Created with paperbackup.py")
-    outlines.append("See https://github.com/intra2net/paperbackup/ for instructions")
+    outlines = prepare_plainlines(ascdata, plaintext_maxlinechars)
 
     # use "enscript" to create postscript with the plaintext
     p = subprocess.Popen(
