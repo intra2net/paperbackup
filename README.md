@@ -33,14 +33,34 @@ not work, type in the missing letters from the plaintext output at the end of th
 
 ## Dependencies
 
+### 1. creating a backup with paperbackup.py
+
+Always needed:
+
 - python 3 https://www.python.org/
 - python3-pillow https://python-pillow.org/
+- python3-qrencode https://github.com/Arachnid/pyqrencode
+
+Apart from the above there are now two possible sets of dependencies for paperbackup.py:
+
+#### 1a. using PyX (as with previous versions)
+
 - PyX http://pyx.sourceforge.net/
 - LaTeX (required by PyX) https://www.latex-project.org/
-- python3-qrencode https://github.com/Arachnid/pyqrencode
 - enscript https://www.gnu.org/software/enscript/
 - ghostscript https://www.ghostscript.com/
+
+#### 1b. using reportlab
+
+- reportlab https://www.reportlab.com/
+
+If the reportlab module can be imported it will be automatically preferred.
+
+### 2. restoring with paperrestore.sh
+
 - ZBar http://zbar.sourceforge.net/
+- sort https://www.gnu.org/software/coreutils/coreutils.html
+- sed https://www.gnu.org/software/sed/
 
 ## Why backup on paper?
 
