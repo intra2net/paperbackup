@@ -27,6 +27,29 @@
 # WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 #
 
+########################################################################
+# BEGIN OF CUSTOMIZATION SECTION
+
+# The paperformat to use, activate the one you want
+paperformat_str = "A4"
+#paperformat_str="Letter"
+
+# constants for the size and layout of the barcodes on page
+max_bytes_in_barcode = 140
+barcodes_per_page = 6
+
+l_unit = "cm"  # or "inch"
+barcode_height = 8
+barcode_x_positions = [1.5, 11, 1.5, 11, 1.5, 11]
+barcode_y_positions = [18.7, 18.7, 10, 10, 1.2, 1.2]
+text_x_offset = 0
+text_y_offset = 8.2
+
+plaintext_maxlinechars = 73
+
+# END OF CUSTOMIZATION SECTION
+########################################################################
+
 import os
 import re
 import sys
@@ -40,7 +63,7 @@ try:
     from reportlab.pdfgen import canvas
     from reportlab.lib import pagesizes
     from reportlab.lib.utils import ImageReader
-    from reportlab.lib.units import cm
+    from reportlab.lib.units import cm, inch
     from reportlab.pdfbase import pdfmetrics
     from reportlab.pdfbase.ttfonts import TTFont
 except ModuleNotFoundError:
@@ -58,22 +81,6 @@ else:
     USE_REPORTLAB = False
 logging.debug("USE_REPORTLAB is %s"%USE_REPORTLAB)
 
-# the paperformat to use, activate the one you want
-paperformat_str = "A4"
-# paperformat_str="Letter"
-
-# constants for the size and layout of the barcodes on page
-max_bytes_in_barcode = 140
-barcodes_per_page = 6
-# in centimeters
-barcode_height = 8
-barcode_x_positions = [1.5, 11, 1.5, 11, 1.5, 11]
-barcode_y_positions = [18.7, 18.7, 10, 10, 1.2, 1.2]
-text_x_offset = 0
-text_y_offset = 8.2
-
-plaintext_maxlinechars = 73
-
 # tool-specific setup for paper format, positions, etc.
 if USE_REPORTLAB:
     if str.isdigit(paperformat_str[-1]):
@@ -82,7 +89,8 @@ if USE_REPORTLAB:
     else:
         # "Letter", "legal", etc.
         paperformat_obj = getattr(pagesizes, paperformat_str.lower(), 'letter')
-    l_unit = cm
+    # Bring all measurements into correct units
+    l_unit = getattr(reportlab.lib.units, l_unit, 'cm')
     barcode_height = barcode_height * l_unit
     barcode_x_positions = [ x * l_unit for x in barcode_x_positions ]
     barcode_y_positions = [ x * l_unit for x in barcode_y_positions ]
@@ -319,7 +327,7 @@ if __name__ == "__main__":
     else:
 
         # init PyX
-        unit.set(defaultunit="cm")
+        unit.set(defaultunit=l_unit)
         pdf = document.document()
 
         # place barcodes on pages
