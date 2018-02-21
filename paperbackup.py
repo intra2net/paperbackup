@@ -201,17 +201,17 @@ def prepare_plainlines(ascdata, plaintext_maxlinechars):
 def search_DPCustomMono2_font(USE_REPORTLAB=USE_REPORTLAB):
     # Try really hard to use the DPCustomMono2 font from Distributed Proofreaders
     # see: https://www.pgdp.net/wiki/DP_Official_Documentation:Proofreading/DPCustomMono2_Font
-    # FIXME: How to select it without all these directories?
     if not USE_REPORTLAB:
-        raise Exception("DONT CALL ME WHEN NOT USING REPORTLAB!")
-    font_locations = ['~/.fonts/DPCustomMono2.ttf',
-                        '~/.fonts/DPCustomMono2/DPCustomMono2.ttf',
-                        '~/.local/share/fonts/DPCustomMono2.ttf',
-                        '~/.local/share/fonts/DPCustomMono2/DPCustomMono2.ttf',
-                        '/usr/share/fonts/TTF/DPCustomMono2.ttf',
-                        '/usr/share/fonts/truetype/DPCustomMono2.ttf',
-                        '/usr/X11R6/lib/X11/fonts/ttfonts/DPCustomMono2.ttf',
-                        '/usr/X11R6/lib/X11/fonts/DPCustomMono2.ttf']
+        raise Exception("DONT CALL search_DPCustomMono2_font() WHEN NOT USING REPORTLAB!")
+    font_locations = [os.path.join(os.path.dirname(sys.argv[0]), "DPCustomMono2.ttf"),
+                      '~/.fonts/DPCustomMono2.ttf',
+                      '~/.fonts/DPCustomMono2/DPCustomMono2.ttf',
+                      '~/.local/share/fonts/DPCustomMono2.ttf',
+                      '~/.local/share/fonts/DPCustomMono2/DPCustomMono2.ttf',
+                      '/usr/share/fonts/TTF/DPCustomMono2.ttf',
+                      '/usr/share/fonts/truetype/DPCustomMono2.ttf',
+                      '/usr/X11R6/lib/X11/fonts/ttfonts/DPCustomMono2.ttf',
+                      '/usr/X11R6/lib/X11/fonts/DPCustomMono2.ttf']
     font_name = None
     font_idx = 0
     while font_name is None and font_idx < len(font_locations):
