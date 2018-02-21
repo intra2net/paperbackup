@@ -178,7 +178,7 @@ def prepare_plainlines(ascdata, plaintext_maxlinechars):
     outlines.append("")
     outlines.append("             -----------------------------------------")
     outlines.append("")
-    outlines.append("The full alphabet and come special characters for comparison:")
+    outlines.append("The full alphabet and some special characters for comparison:")
     outlines.append("  ABCDEFGHIJKLMNOPQRSTUVWXYZ -- 0123456789 / = + : . , # @ ! ( ) \ n -")
     outlines.append("  abcdefghijklmnopqrstuvwxyz --        ... colon fullstop comma ...")
     # TODO: if argument switch to include restore script:
