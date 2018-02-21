@@ -312,9 +312,8 @@ if __name__ == "__main__":
             #  IiVW IiVW
             text.setLeading(12)
         for line in outlines:
-            logging.debug(text.getStartOfLine()[1]/cm)
             if text.getStartOfLine()[1] < 1.5*cm :
-                logging.debug("Minimum reached!")
+                logging.debug("page of text (%i) reached minimum above page numbers"%(pgno+1))
                 c.drawText(text)
                 finish_page(None, c, pgno, USE_REPORTLAB=USE_REPORTLAB)
                 c.showPage()
