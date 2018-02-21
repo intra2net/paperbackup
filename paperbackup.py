@@ -307,7 +307,10 @@ if __name__ == "__main__":
         if font_name: c.setFont(font_name, 9)
         text = c.beginText(1.5*cm, 27*cm)
         if font_name:
-            text.setLeading(13)
+            # minimal vertical separation, empirically based on DPCustomMono2 (9pt) font and the letters combinations
+            #  gggg qqqq
+            #  IiVW IiVW
+            text.setLeading(12)
         for line in outlines:
             logging.debug(text.getStartOfLine()[1]/cm)
             if text.getStartOfLine()[1] < 1.5*cm :
