@@ -50,7 +50,7 @@ except ModuleNotFoundError:
     from PIL import Image
     from pyx import *
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.WARN)
 
 if 'reportlab' in sys.modules:
     USE_REPORTLAB = True
