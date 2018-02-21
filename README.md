@@ -159,3 +159,5 @@ So you have to arrange printing and ordering yourself.
 ## License
 
 MIT X11 License
+
+The font in DPCustomMono2.ttf is covered under its own license, c.f. LICENSE.font
