@@ -107,10 +107,13 @@ def create_barcode(chunkdata):
     return im
 
 
-def finish_page(pdf, canv, pageno):
-    canv.text(10, 0.6, "Page %i" % (pageno+1))
-    pdf.append(document.page(canv, paperformat=paperformat_obj,
-                             fittosize=0, centered=0))
+def finish_page(pdf, canv, pageno, USE_REPORTLAB=USE_REPORTLAB, l_unit=l_unit):
+    if USE_REPORTLAB:
+        canv.drawString(10*l_unit, 0.6*l_unit, "Page %i" % (pageno+1))
+    else:
+        canv.text(10, 0.6, "Page %i" % (pageno+1))
+        pdf.append(document.page(canv, paperformat=paperformat_obj,
+                                fittosize=0, centered=0))
 
 def create_chunks(ascdata, max_bytes_in_barcode):
     """Chunk ascdata into a list of blocks with size max_bytes_in_barcode or less.
@@ -278,7 +281,7 @@ if __name__ == "__main__":
         for bc in range(len(barcode_blocks)):
             if ppos >= barcodes_per_page:
                 # finish the page
-                c.drawString(10*cm, 0.6*cm, "Page %i" % (pgno+1))
+                finish_page(None, c, pgno, USE_REPORTLAB=USE_REPORTLAB)
                 c.showPage()
                 if font_name: c.setFont(font_name, 9)
                 pgno += 1
@@ -294,7 +297,7 @@ if __name__ == "__main__":
                         height=barcode_height,)
             ppos += 1
         # finish the last page with barcode(s)
-        c.drawString(10*cm, 0.6*cm, "Page %i" % (pgno+1))
+        finish_page(None, c, pgno, USE_REPORTLAB=USE_REPORTLAB)
         c.showPage()
         pgno += 1
 
@@ -310,7 +313,7 @@ if __name__ == "__main__":
             if text.getStartOfLine()[1] < 1.5*cm :
                 logging.debug("Minimum reached!")
                 c.drawText(text)
-                c.drawString(10*cm, 0.6*cm, "Page %i" % (pgno+1))
+                finish_page(None, c, pgno, USE_REPORTLAB=USE_REPORTLAB)
                 c.showPage()
                 if font_name: c.setFont(font_name, 9)
                 pgno += 1
@@ -319,7 +322,7 @@ if __name__ == "__main__":
 
         # finish the last page
         c.drawText(text)
-        c.drawString(10*cm, 0.6*cm, "Page %i" % (pgno+1))
+        finish_page(None, c, pgno, USE_REPORTLAB=USE_REPORTLAB)
         c.showPage()
         # Save the PDF file
         c.save()
