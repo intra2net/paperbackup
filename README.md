@@ -33,14 +33,52 @@ not work, type in the missing letters from the plaintext output at the end of th
 
 ## Dependencies
 
+### 1. creating a backup with paperbackup.py
+
+Always needed:
+
 - python 3 https://www.python.org/
 - python3-pillow https://python-pillow.org/
+- python3-qrencode https://github.com/Arachnid/pyqrencode
+
+Apart from the above there are now two possible sets of dependencies for paperbackup.py:
+
+#### 1a. using PyX (as with previous versions)
+
 - PyX http://pyx.sourceforge.net/
 - LaTeX (required by PyX) https://www.latex-project.org/
-- python3-qrencode https://github.com/Arachnid/pyqrencode
 - enscript https://www.gnu.org/software/enscript/
 - ghostscript https://www.ghostscript.com/
+
+#### 1b. using reportlab
+
+- reportlab https://www.reportlab.com/
+
+If the reportlab module can be imported it will be automatically preferred.
+
+### 2. restoring with paperrestore.sh
+
 - ZBar http://zbar.sourceforge.net/
+- sort https://www.gnu.org/software/coreutils/coreutils.html
+- sed https://www.gnu.org/software/sed/
+
+### Font
+
+The DPCustomMono2 font included comes from the Distributed Proofreaders project:
+https://www.pgdp.net/wiki/DP_Official_Documentation:Proofreading/DPCustomMono2_Font
+It was originally created to aid in distinguishing between visually similar letters when proof reading OCRd text.
+
+If you are using reportlab (see 1b. above) and call paperbackup.py in the git repository or tarball this font
+will be automatically used.
+Otherwise please copy DPCustomMono2.ttf to any of the following locations to use it:
+  ~/.fonts/DPCustomMono2.ttf
+  ~/.fonts/DPCustomMono2/DPCustomMono2.ttf
+  ~/.local/share/fonts/DPCustomMono2.ttf
+  ~/.local/share/fonts/DPCustomMono2/DPCustomMono2.ttf
+  /usr/share/fonts/TTF/DPCustomMono2.ttf
+  /usr/share/fonts/truetype/DPCustomMono2.ttf
+  /usr/X11R6/lib/X11/fonts/ttfonts/DPCustomMono2.ttf
+  /usr/X11R6/lib/X11/fonts/DPCustomMono2.ttf
 
 ## Why backup on paper?
 
@@ -159,3 +197,5 @@ So you have to arrange printing and ordering yourself.
 ## License
 
 MIT X11 License
+
+The font in DPCustomMono2.ttf is covered under its own license, c.f. LICENSE.font
