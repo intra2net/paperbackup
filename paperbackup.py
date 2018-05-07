@@ -38,6 +38,9 @@ from datetime import datetime
 from PIL import Image
 from pyx import *
 
+# Format for chunk_header
+chunk_header_format="^{:03}/{:03} "
+
 # constants for the size and layout of the barcodes on page
 max_bytes_in_barcode = 140
 barcodes_per_page = 6
@@ -91,16 +94,28 @@ if allowedmatch.group() != ascdata:
                        % (len(allowedmatch.group()),
                           ascdata[len(allowedmatch.group())]))
 
+chunk_header = chunk_header_format.format(1,999)
+extra_len = len(chunk_header)
+count = 1
+count_next = 0
+while True:
+    count_next = (len(ascdata) + (count * extra_len) + max_bytes_in_barcode - 1) // max_bytes_in_barcode
+    #print("count_next:{} == count:{}".format(count_next, count))
+    if (count_next == count):
+        #print("Done")
+        break
+    count = count_next
+
 # split the ascdata into chunks of max_bytes_in_barcode size
-# each chunk begins with ^<sequence number><space>
+# each chunk begins with ^<sequence number>,<count><space>
 # this allows to easily put them back together in the correct order
 barcode_blocks = []
-chunkdata = "^1 "
+chunkdata = chunk_header_format.format(1,count)
 for char in list(ascdata):
     if len(chunkdata)+1 > max_bytes_in_barcode:
         # chunk is full -> create barcode from it
         barcode_blocks.append(create_barcode(chunkdata))
-        chunkdata = "^" + str(len(barcode_blocks)+1) + " "
+        chunkdata = chunk_header_format.format(len(barcode_blocks)+1, count)
 
     chunkdata += char
 
