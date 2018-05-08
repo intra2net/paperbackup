@@ -35,6 +35,7 @@ import subprocess
 import qrencode
 from tempfile import mkstemp
 from datetime import datetime
+from shutil import which
 from PIL import Image
 from pyx import *
 
@@ -171,6 +172,9 @@ for line in splitlines:
 
     chksumlines.append(line)
 
+# we also want a checksum which the restored file should match
+b2sum = hashlib.blake2b(bytes(ascdata, 'utf8')).hexdigest()
+
 # add some documentation around the plaintest
 outlines=[]
 coldoc=" "*splitat
@@ -178,6 +182,10 @@ coldoc+=" | MD5"
 outlines.append(coldoc)
 outlines.extend(chksumlines)
 outlines.append("")
+outlines.append("")
+outlines.append("b2sum of input file (split over 2 lines):")
+outlines.append("%s"%b2sum[:64])
+outlines.append("%s"%b2sum[64:])
 outlines.append("")
 outlines.append("")
 outlines.append("--")
@@ -216,3 +224,16 @@ if ret != 0:
 
 os.remove(temp_text_path)
 os.remove(temp_barcode_path)
+
+verify_prog = which("paperbackup-verify.sh")
+if not verify_prog:
+    verify_prog = which("paperbackup-verify")
+if not verify_prog:
+    verify_prog = which(os.path.join(os.path.dirname(sys.argv[0]), "paperbackup-verify.sh"))
+if not verify_prog:
+    print("\n  NOTE:  Could not find 'paperbackup-verify' program which should have been")
+    print(  "           installed together with {}! ".format(sys.argv[0]))
+    verify_prog = "paperbackup-verify"
+print("\n  !!!!!!!!!")
+print("  ATTENTION:  Running '{} {}.pdf' NOW is STRONGLY advised to".format(verify_prog, just_filename))
+print("  !!!!!!!!!     verify that zbarimg can read back the generated qr codes!\n")
