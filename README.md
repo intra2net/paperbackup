@@ -134,6 +134,11 @@ in the constants section of the source to change to US Letter.
 
 ## Similar projects
 
+###### paperbackup with reportlab backend https://github.com/tuxlifan/paperbackup
+
+Should behave the same as this paperbackup but with using reportlab instead of PyX/LaTeX for PDF generation.
+Any discrepancies should be filed at https://github.com/tuxlifan/paperbackup/issues
+
 ###### PAPERBACK http://ollydbg.de/Paperbak/
 
 Although it is GPL 3, it is currently available for Windows only. It uses it's own proprietary
