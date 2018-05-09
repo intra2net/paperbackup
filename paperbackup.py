@@ -71,6 +71,15 @@ def finish_page(pdf, canv, pageno):
 
 # main code
 
+if sys.argv[1] == "--b2sum":
+    if len(sys.argv) > 2:
+        with open(sys.argv[2], 'r') as ifile:
+            data = ''.join(ifile.readlines())
+    else:
+        data = ''.join(sys.stdin.readlines())
+    print(hashlib.blake2b(bytes(data, 'utf8')).hexdigest())
+    sys.exit(0)
+
 if len(sys.argv) != 2:
     raise RuntimeError('Usage {} FILENAME.asc'.format(sys.argv[0]))
 
