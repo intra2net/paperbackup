@@ -139,13 +139,17 @@ in the constants section of the source to change to US Letter.
 Should behave the same as this paperbackup but with using reportlab instead of PyX/LaTeX for PDF generation.
 Any discrepancies should be filed at https://github.com/tuxlifan/paperbackup/issues
 
-###### PAPERBACK http://ollydbg.de/Paperbak/
+###### PAPERBAK http://ollydbg.de/Paperbak/ and https://github.com/Rupan/paperbak/
 
 Although it is GPL 3, this original version is for Windows only (but in 2018 a crossplatform, backwards-compatible, command line version paperbak-cli has been published, see next entry). It uses it's own proprietary barcode type. That allows it to produce much more dense code, but in case of a problem with decoding you are on your own.
 
 ###### paperbak-cli https://git.teknik.io/scuti/paperback-cli
 
-Paperback-cli is the crossplatform, backwards-compatible, command line version of Oleh Yuschuk's PaperBack. https://github.com/Wikinaut/paperback-cli is a copy on github.
+Paperback-cli is the crossplatform, backwards-compatible, command line version of Oleh Yuschuk's PaperBack. https://github.com/Wikinaut/paperback-cli is a copy on github. See discussion on https://github.com/Rupan/paperbak/issues/1 for further programs.
+
+###### ColorSafe https://github.com/colorsafe/colorsafe
+
+A data matrix for printing on paper. Inspired by PaperBak, ColorSafe is written with modern methods and technologies and is cross-platform. It aims to allow a few Megabytes of data (or more) to be stored on paper for a worst case scenario backup, for extremely long-term archiving, or just for fun. With best practices, ColorSafe encoded data can safely withstand the viccissitudes of technology changes over long periods of time.
 
 ###### Twibright Optar http://ronja.twibright.com/optar/
 
