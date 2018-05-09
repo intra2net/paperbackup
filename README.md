@@ -141,9 +141,11 @@ Any discrepancies should be filed at https://github.com/tuxlifan/paperbackup/iss
 
 ###### PAPERBACK http://ollydbg.de/Paperbak/
 
-Although it is GPL 3, it is currently available for Windows only. It uses it's own proprietary
-barcode type. That allows it to produce much more dense code, but in case of a problem with
-decoding you are on your own.
+Although it is GPL 3, this original version is for Windows only (but in 2018 a crossplatform, backwards-compatible, command line version paperbak-cli has been published, see next entry). It uses it's own proprietary barcode type. That allows it to produce much more dense code, but in case of a problem with decoding you are on your own.
+
+###### paperbak-cli https://git.teknik.io/scuti/paperback-cli
+
+Paperback-cli is the crossplatform, backwards-compatible, command line version of Oleh Yuschuk's PaperBack. https://github.com/Wikinaut/paperback-cli is a copy on github.
 
 ###### Twibright Optar http://ronja.twibright.com/optar/
 
