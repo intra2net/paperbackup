@@ -4,10 +4,11 @@
 #   where backup.pdf should be the pdf created with paperbackup.py
 
 RESTOREPROG=$(dirname $0)/paperrestore.sh
+PAPERB2SUMPROG="$(dirname $0)/paperbackup.py --b2sum"
 
 rPDF=$( $RESTOREPROG $1 )
 
-bPDF=$(echo "$rPDF" | b2sum | cut -d ' ' -f 1 )
+bPDF=$(echo "$rPDF" | $PAPERB2SUMPROG )
 bEmbedded=$(pdftotext $1 - | grep b2sum -A2 | tail -2 | tr -d '\n')
 
 if [ "x$bPDF" == "x$bEmbedded" ]; then
