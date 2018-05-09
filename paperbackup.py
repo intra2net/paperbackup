@@ -35,7 +35,6 @@ import subprocess
 import qrencode
 from tempfile import mkstemp
 from datetime import datetime
-from shutil import which
 from PIL import Image
 from pyx import *
 
@@ -70,15 +69,6 @@ def finish_page(pdf, canv, pageno):
                              fittosize=0, centered=0))
 
 # main code
-
-if sys.argv[1] == "--b2sum":
-    if len(sys.argv) > 2:
-        with open(sys.argv[2], 'r') as ifile:
-            data = ''.join(ifile.readlines())
-    else:
-        data = ''.join(sys.stdin.readlines())
-    print(hashlib.blake2b(bytes(data, 'utf8')).hexdigest())
-    sys.exit(0)
 
 if len(sys.argv) != 2:
     raise RuntimeError('Usage {} FILENAME.asc'.format(sys.argv[0]))
@@ -182,7 +172,7 @@ for line in splitlines:
     chksumlines.append(line)
 
 # we also want a checksum which the restored file should match
-b2sum = hashlib.blake2b(bytes(ascdata, 'utf8')).hexdigest()
+checksum = hashlib.sha256(bytes(ascdata, 'utf8')).hexdigest()
 
 # add some documentation around the plaintest
 outlines=[]
@@ -192,9 +182,8 @@ outlines.append(coldoc)
 outlines.extend(chksumlines)
 outlines.append("")
 outlines.append("")
-outlines.append("b2sum of input file (split over 2 lines):")
-outlines.append("%s"%b2sum[:64])
-outlines.append("%s"%b2sum[64:])
+outlines.append("sha256sum of input file:")
+outlines.append("%s"%checksum)
 outlines.append("")
 outlines.append("")
 outlines.append("--")
