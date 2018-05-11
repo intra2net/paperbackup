@@ -139,9 +139,9 @@ in the constants section of the source to change to US Letter.
 Should behave the same as this paperbackup but with using reportlab instead of PyX/LaTeX for PDF generation.
 Any discrepancies should be filed at https://github.com/tuxlifan/paperbackup/issues
 
-###### PAPERBAK http://ollydbg.de/Paperbak/ and https://github.com/Rupan/paperbak/
+###### PaperBack http://ollydbg.de/Paperbak/ and https://github.com/Rupan/paperbak/
 
-Although it is GPL 3, this original version is for Windows only (but in 2018 a crossplatform, backwards-compatible, command line version paperbak-cli has been published, see next entry). It uses it's own proprietary barcode type. That allows it to produce much more dense code, but in case of a problem with decoding you are on your own.
+Although it is GPL 3, this original version **PaperBack** (program 8-character name PaperBak) is for Windows only (but in 2018 a crossplatform, backwards-compatible, command line version paperbak-cli has been published, see next entry). It uses it's own proprietary barcode type. That allows it to produce much more dense code, but in case of a problem with decoding you are on your own.
 
 ###### paperbak-cli https://git.teknik.io/scuti/paperback-cli
 
