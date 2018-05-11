@@ -171,6 +171,9 @@ for line in splitlines:
 
     chksumlines.append(line)
 
+# we also want a checksum which the restored file should match
+checksum = hashlib.sha256(bytes(ascdata, 'utf8')).hexdigest()
+
 # add some documentation around the plaintest
 outlines=[]
 coldoc=" "*splitat
@@ -178,6 +181,9 @@ coldoc+=" | MD5"
 outlines.append(coldoc)
 outlines.extend(chksumlines)
 outlines.append("")
+outlines.append("")
+outlines.append("sha256sum of input file:")
+outlines.append("%s"%checksum)
 outlines.append("")
 outlines.append("")
 outlines.append("--")
@@ -216,3 +222,6 @@ if ret != 0:
 
 os.remove(temp_text_path)
 os.remove(temp_barcode_path)
+
+print("Please now verify that the output can be restored by calling:")
+print("paperbackup-verify.sh {}.pdf".format(just_filename))
