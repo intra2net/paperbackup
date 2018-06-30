@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 
 # USAGE: paperbackup-verify.sh backup.pdf
 #   where backup.pdf should be the pdf created with paperbackup.py
