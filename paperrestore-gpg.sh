@@ -9,6 +9,7 @@
 #   The script uses gpg2 for decryption and falls back to gpg
 #   if gpg2 is not available.
 
+set -euf -o pipefail
 
 PAPERBACKUPPATH="$(readlink -f $(dirname $0))"
 

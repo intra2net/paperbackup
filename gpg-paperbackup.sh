@@ -16,6 +16,8 @@
 #   output_encrypted_path will then be passed to paperbackup.py and
 #   result written to output_encrypted_path.pdf
 
+set -euf -o pipefail
+
 PAPERBACKUPPATH="$(readlink -f $(dirname $0))"
 
 if ! GPGPATH=$(command -v gpg2) ; then
