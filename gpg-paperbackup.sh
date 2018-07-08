@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Encrypts specified file with gpg default symmetric cipher algorithm
 # and prepares paperbackup PDF of encrypted version

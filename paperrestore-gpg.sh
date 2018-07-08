@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # Restores data from scanned pages created with gpg-paperbackup.sh
 #
