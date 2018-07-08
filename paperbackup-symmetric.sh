@@ -4,10 +4,12 @@
 # and prepares paperbackup PDF of encrypted version
 #
 # USAGE: paperbackup-symmetric.sh plaintext_fpath output_fpath cipher
+#    or  paperbackup-symmetric.sh - output_fpath cipher
 #
 #   where plaintext_fpath is plaintext file to encode (can be text or binary).
 #   encrypted and base64 encoded version of plaintext will be written
 #   to output_fpath.
+#   If first argument is '-' the script reads input data from stdin.
 #   The script uses gpg2 for symmetric encryption and falls back to gpg
 #   if gpg2 is not available.
 #   Encryption algorithm can be specified in third optional argument.
@@ -16,7 +18,7 @@
 #   output_encrypted_path will then be passed to paperbackup.py and
 #   result written to output_encrypted_path.pdf
 
-set -euf -o pipefail
+set -ef -o pipefail
 
 PAPERBACKUPPATH="$(readlink -f $(dirname $0))"
 
@@ -34,7 +36,11 @@ else
   CIPHER_ALGO="$3"
 fi
 
-${GPGPATH} --symmetric --cipher-algo $CIPHER_ALGO -o- "$1" | base64 > "$2"
+if [ $1 = "-" ]; then
+  ${GPGPATH} --symmetric --cipher-algo $CIPHER_ALGO <&0 | base64 > "$2"
+else
+  ${GPGPATH} --symmetric --cipher-algo $CIPHER_ALGO -o- "$1" | base64 > "$2"
+fi
 ${PAPERBACKUPPATH}/paperbackup.py "$2"
-${PAPERBACKUPPATH}/paperbackup-verify.sh "${2}.pdf"
+bash ${PAPERBACKUPPATH}/paperbackup-verify.sh "${2}.pdf"
 
