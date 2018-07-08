@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 
-# Restores data from scanned pages created with gpg-paperbackup.sh
+# Restores data from scanned pages created with paperbackup-symmetric.sh
 #
-# USAGE: paperrestore-gpg.sh input_fpath output_fpath
+# USAGE: paperrestore-symmetric.sh input_fpath output_fpath
 #   where input_fpath is path to PDF with scanned paper backup
-#   previously created with gpg-paperbackup.sh
+#   previously created with paperbackup-symmetric.sh
 #   Decrypted plaintext will be written to output_fpath.
 #   The script uses gpg2 for decryption and falls back to gpg
 #   if gpg2 is not available.
