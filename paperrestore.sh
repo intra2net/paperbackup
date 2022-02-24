@@ -4,7 +4,7 @@
 
 # give one file containing all qrcodes as parameter
 
-SCANNEDFILE=$1
+SCANNEDFILE="$1"
 
 if [ -z "$SCANNEDFILE" ]; then
     echo "give one file containing all qrcodes as parameter"
