@@ -17,12 +17,12 @@ if [ -z "$SCANNEDFILE" ]; then
 fi
 
 if [ ! -f "$SCANNEDFILE" ]; then
-    echo "$SCANNEDFILE is not a file"
+    echo "$SCANNEDFILE is not a file" > /dev/stderr
     exit 1
 fi
 
 if [ ! -x "/usr/bin/zbarimg" ]; then
-    echo "/usr/bin/zbarimg missing"
+    echo "/usr/bin/zbarimg missing" > /dev/stderr
     exit 2
 fi
 
