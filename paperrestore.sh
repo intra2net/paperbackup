@@ -16,7 +16,7 @@ if [ -z "$SCANNEDFILE" ]; then
     exit 1
 fi
 
-if ! [ -f "$SCANNEDFILE" ]; then
+if [ ! -f "$SCANNEDFILE" ]; then
     echo "$SCANNEDFILE is not a file"
     exit 1
 fi
