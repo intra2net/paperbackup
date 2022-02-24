@@ -42,6 +42,18 @@ not work, type in the missing letters from the plaintext output at the end of th
 - ghostscript https://www.ghostscript.com/
 - ZBar http://zbar.sourceforge.net/
 
+### MacOS with Homebrew
+
+Some of the dependencies listed above are either outdated, or don't work
+on Big Sur, recent versions of Homebrew, or newer versions of Python3.
+These issues can be addressed by installing [Homebrew](https://brew.sh/)
+and then running the new `paperbackup-homebrew-setup.sh` script to
+configure the dependencies.
+
+*Note: Please adjust the script if you'd rather use a LaTex package other
+than the BasicTex cask, or if you'd prefer to use GraphicsMagick rather
+than ImageMagick.*
+
 ## Why backup on paper?
 
 Some data, like GnuPG or SSH keys, can be really really important for you, like that your whole
