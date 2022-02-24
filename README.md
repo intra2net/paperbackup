@@ -5,7 +5,7 @@ Designed to backup ASCII-armored GnuPG and SSH key files and ciphertext.
 
 ## How to use
 
-###### Backup
+### Backup
 
 ```
 gpg2 --armor --export-options export-minimal --export-secret-key "User Name" >key.asc
@@ -19,9 +19,9 @@ private key is still encrypted with it's passphrase, so make sure
 you don't lose or forget it.
 
 See some example output here:
-https://github.com/intra2net/paperbackup/raw/master/example_output.pdf
+<https://github.com/intra2net/paperbackup/raw/master/example_output.pdf>
 
-###### Restore
+### Restore
 
 1. Scan the papers
 2. Create one file containing all the pages. zbar supports e.g. PDF, TIFF, PNG, JPG,...
@@ -134,35 +134,35 @@ in the constants section of the source to change to US Letter.
 
 ## Similar projects
 
-###### paperbackup with reportlab backend https://github.com/tuxlifan/paperbackup
+### paperbackup with reportlab backend https://github.com/tuxlifan/paperbackup
 
 Should behave the same as this paperbackup but with using reportlab instead of PyX/LaTeX for PDF generation.
 Any discrepancies should be filed at https://github.com/tuxlifan/paperbackup/issues
 
-###### PaperBack http://ollydbg.de/Paperbak/ and https://github.com/Rupan/paperbak/
+### PaperBack http://ollydbg.de/Paperbak/ and https://github.com/Rupan/paperbak/
 
 Although it is GPL 3, this original version **PaperBack** (program 8-character name PaperBak) is for Windows only (but in 2018 a crossplatform, backwards-compatible, command line version paperbak-cli has been published, see next entry). It uses it's own proprietary barcode type. That allows it to produce much more dense code, but in case of a problem with decoding you are on your own.
 
-###### paperback-cli https://git.teknik.io/scuti/paperback-cli
+### paperback-cli https://git.teknik.io/scuti/paperback-cli
 
 Paperback-cli is the crossplatform, backwards-compatible, command line version of Oleh Yuschuk's PaperBack. https://github.com/Wikinaut/paperback-cli is a copy on github. See discussion on https://github.com/Rupan/paperbak/issues/1 for further programs.
 
-###### ColorSafe https://github.com/colorsafe/colorsafe
+### ColorSafe https://github.com/colorsafe/colorsafe
 
 A data matrix for printing on paper. Inspired by PaperBak, ColorSafe is written with modern methods and technologies and is cross-platform. It aims to allow a few Megabytes of data (or more) to be stored on paper for a worst case scenario backup, for extremely long-term archiving, or just for fun. With best practices, ColorSafe encoded data can safely withstand the viccissitudes of technology changes over long periods of time.
 
-###### Twibright Optar http://ronja.twibright.com/optar/
+### Twibright Optar http://ronja.twibright.com/optar/
 
 Uses the not-so-common Golay code to backup 200KB per page. So it offers a much higher
 density than paperbackup.py, but is probably more affected by defects on the paper.
 GPL 2 and designed for Linux.
 
-###### Paperkey http://www.jabberwocky.com/software/paperkey/
+### Paperkey http://www.jabberwocky.com/software/paperkey/
 
 It is designed to reduce the data needed to backup a private GnuPG key. It does not help you
 to print and scan the data. So it could be used in addition to paperbackup.py.
 
-###### asc2qr.sh https://github.com/4bitfocus/asc-key-to-qr-code
+### asc2qr.sh https://github.com/4bitfocus/asc-key-to-qr-code
 
 Very similar to paperbackup.py. But it only outputs .png images without ordering information.
 So you have to arrange printing and ordering yourself.
