@@ -6,6 +6,11 @@
 
 SCANNEDFILE="$1"
 
+if [ "$(uname)" = "Darwin" ]; then
+    PATH="/usr/local/bin:$PATH"
+    alias sed="gsed"
+fi
+
 if [ -z "$SCANNEDFILE" ]; then
     echo "give one file containing all qrcodes as parameter"
     exit 1
