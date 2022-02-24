@@ -8,7 +8,7 @@ Designed to backup ASCII-armored GnuPG and SSH key files and ciphertext.
 ### Backup
 
 ```
-gpg2 --armor --export-options export-minimal --export-secret-key "User Name" >key.asc
+gpg2 --armor --export-options export-minimal --export-secret-key "User Name" > key.asc
 paperbackup.py key.asc
 paperrestore.sh key.asc.pdf | diff key.asc -
 lpr key.asc.pdf
