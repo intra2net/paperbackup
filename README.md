@@ -181,4 +181,13 @@ So you have to arrange printing and ordering yourself.
 
 ## License
 
-MIT X11 License
+[MIT X11 License](https://opensource.org/licenses/MIT)
+<!-- SPDX-License-Identifier: MIT -->
+
+*NB: The upstream author marked this as "MIT X11" (there's an MIT
+license, and an X11 license, but there's no SPDX identifier for an "MIT
+X11" license) but included the MIT license in the
+[LICENSE](https://github.com/intra2net/paperbackup/blob/master/LICENSE)
+file. Please contact
+[upstream](https://github.com/intra2net/paperbackup) if you're confused
+about which license(s) apply.*
