@@ -184,11 +184,28 @@ outlines.append("")
 outlines.append("")
 outlines.append("sha256sum of input file:")
 outlines.append("%s"%checksum)
-outlines.append("")
-outlines.append("")
-outlines.append("--")
-outlines.append("Created with paperbackup.py")
-outlines.append("See https://github.com/intra2net/paperbackup/ for instructions")
+outlines += r"""
+
+--
+Created with paperbackup.py from https://github.com/intra2net/paperbackup/
+To restore, either scan this document into a file or use a webcam
+This shell script should restore the content inline
+
+/usr/bin/zbarimg --raw -Sdisable -Sqrcode.enable "$SCANNEDFILE" \
+    | sed -e "s/\^/\x0/g" \
+    | sort -z -n \
+    | sed ':a;N;$!ba;s/\n\x0[0-9]* //g;s/\x0[0-9]* //g;s/\n\x0//g'
+
+# replace 'zbarimg \"$SCANNEDFILE\"' with 'zbarcam' if you have a
+# webcam instead of a scanned document
+
+# algorithm:
+# 1. zbarimg ends each scanned code with a newline
+# 2. each barcode content begins with ^<number><space>
+# 3. convert that to \0<number><space>, so sort can sort on that
+# 4. then remove all \n\0<number><space> so we get the originial without \n
+
+""".split("\n")
 
 # use "enscript" to create postscript with the plaintext
 p = subprocess.Popen(
